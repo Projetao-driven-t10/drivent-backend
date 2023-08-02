@@ -1,16 +1,15 @@
 import { redisClient } from "@/config/redis";
-import { Hotel } from "@prisma/client";
+import { Hotel, Room, Event } from "@prisma/client";
 import { RedisCommandArgument } from "@redis/client/dist/lib/commands";
 
 interface Callback {
-  ():   Hotel[] | Event;
+  (): Promise< Event | Hotel[] | Room[]>;
 }
 interface MyFunc {
-  (key: RedisCommandArgument, cb: Callback):  Promise<Hotel[] | Event>;
+  (key: RedisCommandArgument, cb: Callback): Promise< Event | Hotel[] | Room[]>;
 }
 
-//TODO implementar codigo em event repository e hotel repository
-export const getOrSetCache: MyFunc = (key, cb: Callback) => {
+export const getOrSetCache: MyFunc = async (key, cb: Callback) => {
   const EXPIRATION_TIME = 300;
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
