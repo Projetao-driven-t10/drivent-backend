@@ -38,11 +38,6 @@ export function handleApplicationErrors(
     });
   }
 
-  console.log("---------------------------")
-  console.log(res)
-  console.log("---------------------------")
-  // console.log(err)
-
   /* eslint-disable-next-line no-console */
   console.error(err.name);
   res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
