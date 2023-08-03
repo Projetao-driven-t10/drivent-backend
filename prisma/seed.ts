@@ -1,22 +1,26 @@
-import { PrismaClient } from "@prisma/client";
-import dayjs from "dayjs";
+import { Hotel, PrismaClient, Room, TicketType } from "@prisma/client";
+import { seedEvent, seedHotel, seedRoom, seedTicketType } from "./seedFunctions";
 const prisma = new PrismaClient();
 
 async function main() {
   let event = await prisma.event.findFirst();
-  if (!event) {
-    event = await prisma.event.create({
-      data: {
-        title: "Driven.t",
-        logoImageUrl: "https://files.driveneducation.com.br/images/logo-rounded.png",
-        backgroundImageUrl: "linear-gradient(to right, #FA4098, #FFD77F)",
-        startsAt: dayjs().toDate(),
-        endsAt: dayjs().add(21, "days").toDate(),
-      },
-    });
-  }
+  let ticketType: TicketType[] | TicketType | null = await prisma.ticketType.findFirst();
+  let hotel: Hotel[] = await prisma.hotel.findMany();
+  let room: Room[] = await prisma.room.findMany();
 
-  console.log({ event });
+  if (!event) event = await seedEvent()
+  console.log(event)
+
+  if (!ticketType) ticketType = await seedTicketType()
+  console.log(ticketType)
+
+  if (hotel.length === 0) hotel = await seedHotel();
+  console.log(hotel)
+
+  if (room.length === 0) hotel.forEach(async (hostel) =>{
+    await seedRoom(hostel.id)
+    console.log("seeded Rooms of hotel: "+hostel.id)
+  })
 }
 
 main()
@@ -27,3 +31,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
