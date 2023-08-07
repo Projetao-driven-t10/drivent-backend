@@ -3,7 +3,11 @@ import { getOrSetCache } from "@/utils/redis-utils";
 
 async function findHotels() {
   const hotels = await getOrSetCache("getAllHotels", async () => {
-    const allHotels = await prisma.hotel.findMany();
+    const allHotels = await prisma.hotel.findMany({
+      include: {
+        Rooms: true,
+      },
+    });
     return allHotels;
   });
   return hotels;
