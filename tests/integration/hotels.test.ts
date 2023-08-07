@@ -19,6 +19,8 @@ import {
   createRoomWithHotelId,
 } from "../factories";
 import { cleanDb, generateValidToken } from "../helpers";
+import { RedisFlushModes } from "redis";
+import { redisClient } from "@/config/redis";
 
 beforeAll(async () => {
   await init();
@@ -26,6 +28,12 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await cleanDb();
+  await redisClient.flushDb(RedisFlushModes.ASYNC);
+});
+
+afterAll(async () => {
+  await prisma.$disconnect();
+  await redisClient.disconnect();
 });
 
 const server = supertest(app);
@@ -100,7 +108,8 @@ describe("GET /hotels", () => {
           name: createdHotel.name,
           image: createdHotel.image,
           createdAt: createdHotel.createdAt.toISOString(),
-          updatedAt: createdHotel.updatedAt.toISOString()
+          updatedAt: createdHotel.updatedAt.toISOString(),
+          Rooms: expect.anything()
         }
       ]);
     });

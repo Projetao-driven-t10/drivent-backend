@@ -3,10 +3,14 @@ import { Hotel, Room, Event } from "@prisma/client";
 import { RedisCommandArgument } from "@redis/client/dist/lib/commands";
 
 interface Callback {
-  (): Promise< Event | Hotel[] | Room[]>;
+  (): Promise<Event | Hotel[] | Room[] | Hotel & {
+    Rooms: Room[]
+  }>;
 }
 interface MyFunc {
-  (key: RedisCommandArgument, cb: Callback): Promise< Event | Hotel[] | Room[]>;
+  (key: RedisCommandArgument, cb: Callback): Promise< Event | Hotel[] | Room[] | Hotel & {
+    Rooms: Room[]
+  }>;
 }
 
 export const getOrSetCache: MyFunc = async (key, cb: Callback) => {
@@ -18,7 +22,9 @@ export const getOrSetCache: MyFunc = async (key, cb: Callback) => {
       if (data != null) {
         resolve(JSON.parse(data));
       } else {
-        const freshData = await cb();
+        const freshData = await cb() as Hotel & {
+          Rooms: Room[]
+        };
         await redisClient.setEx(key, EXPIRATION_TIME, JSON.stringify(freshData));
         resolve(freshData);
       }
