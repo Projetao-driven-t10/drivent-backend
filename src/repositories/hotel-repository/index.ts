@@ -6,7 +6,7 @@ async function findHotels() {
     const allHotels = await prisma.hotel.findMany({
       include: {
         Rooms: true,
-      },
+      }
     });
     return allHotels;
   });
@@ -14,17 +14,19 @@ async function findHotels() {
 }
 
 async function findRoomsByHotelId(hotelId: number) {
-  const rooms = await getOrSetCache(`hotelrooms=${hotelId}`, async () => {
-    const getRooms = await prisma.room.findMany({
+  const rooms = await getOrSetCache(`hotelroom${hotelId}`, async () => {
+    const getRooms = await prisma.hotel.findFirst({
       where: {
-        hotelId,
+        id: hotelId,
+      },
+      include: {
+        Rooms: true,
       },
     });
     return getRooms;
   });
   return rooms;
 }
-
 const hotelRepository = {
   findHotels,
   findRoomsByHotelId,

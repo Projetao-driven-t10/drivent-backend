@@ -7,10 +7,18 @@ import httpStatus from "http-status";
 import supertest from "supertest";
 import { createEvent, createUser } from "../factories";
 import { cleanDb } from "../helpers";
+import { redisClient } from "@/config/redis";
+import { RedisFlushModes } from "redis";
 
 beforeAll(async () => {
   await init();
   await cleanDb();
+});
+beforeEach(async () => {
+  await redisClient.flushDb(RedisFlushModes.ASYNC);
+});
+afterAll(async () => {
+  await redisClient.disconnect();
 });
 
 const server = supertest(app);
