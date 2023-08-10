@@ -143,6 +143,7 @@ model Booking {
 model Activity {
   id           Int             @id @default(autoincrement())
   name         String
+  date         DateTime
   start        DateTime
   end          DateTime
   vacancies    Int
