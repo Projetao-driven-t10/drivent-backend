@@ -31,3 +31,25 @@ export async function createSubscription(userId: number, activityId: number){
         }
     })
 }
+
+export async function listUserActivities (userId: number){
+    return prisma.subscription.findMany({
+        where: {
+            userId
+        },
+        include: {
+            Activity: true
+        }
+    })
+}
+
+export async function findActivityById (id: number){
+    return prisma.activity.findUnique({
+        where: {
+            id
+        },
+        include: {
+            Subscription: true
+        }
+    })
+}
