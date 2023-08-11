@@ -1,10 +1,10 @@
 import * as activitiesRepository from "@/repositories/activity-repository";
-export async function listActivities (day: string){
-    if (!day){
-        return await activitiesRepository.listActivities();
-    }
-    const date = new Date(day);
-    return await activitiesRepository.listActivitiesOfDay(date);
+export async function listActivities (){
+    return await activitiesRepository.listActivitiesDays();
+}
+
+export async function listActivitiesByDay (day : string){
+    return await activitiesRepository.listActivitiesByDay(day);
 }
 
 export async function createSubscription(userId: number, activityId: number){
