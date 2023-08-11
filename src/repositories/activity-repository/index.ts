@@ -13,7 +13,12 @@ export async function listActivitiesDays() {
 
 export async function listActivitiesByDay(day : string) {
     return prisma.activity.findMany({
-        where: {day : day},
+        where: {
+            day : day
+        },
+        include: {
+            Subscription: true
+        }
     });
 }
 // export async function listActivitiesOfDay() {
