@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import userRepository from "@/repositories/user-repository";
 import sessionRepository from "@/repositories/session-repository";
 import jwt from "jsonwebtoken"; 
+import { exclude } from "@/utils/prisma-utils";
 
 async function loginUserWithGitHub(code: string) {
   let email;
@@ -17,9 +18,12 @@ async function loginUserWithGitHub(code: string) {
   const randomID = randomUUID();
 
   const checkUser = await userRepository.findByEmail(email);
-
+  let user = {
+    email: checkUser.email,
+    password: checkUser.password,
+  };
   if (!checkUser) {
-    const user = {
+    user = {
       email: email,
       password: randomID,
     };
@@ -41,7 +45,10 @@ async function loginUserWithGitHub(code: string) {
   });
   console.log(jwttoken);
 
-  return { token: jwttoken }; // JWTtoken
+  return {
+    user: exclude(user, "password"),
+    token,
+  }; // JWTtoken
 }
 
 async function getUserProfileFromGithub(token: string) {
