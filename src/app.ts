@@ -16,7 +16,8 @@ import {
   ticketsRouter,
   paymentsRouter,
   hotelsRouter,
-  bookingRouter
+  bookingRouter,
+  oauthRouter
 } from "@/routers";
 
 const app = express();
@@ -26,6 +27,7 @@ app
   .get("/health", (_req, res) => res.send("OK!"))
   .use("/users", usersRouter)
   .use("/auth", authenticationRouter)
+  .use("/github", oauthRouter)
   .use("/event", eventsRouter)
   .use("/enrollments", enrollmentsRouter)
   .use("/tickets", ticketsRouter)
