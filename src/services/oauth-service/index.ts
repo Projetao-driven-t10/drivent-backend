@@ -35,15 +35,12 @@ async function loginUserWithGitHub(code: string) {
       token,
       userId: createdUser.id,
     });
-
-    return jwttoken as string;
   } 
   const jwttoken: string = jwt.sign({ userId: checkUser.id }, process.env.JWT_SECRET);
   await sessionRepository.create({
     token,
     userId: checkUser.id,
   });
-  console.log(jwttoken);
 
   return {
     user: exclude(user, "password"),
