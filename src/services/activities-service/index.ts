@@ -28,7 +28,22 @@ function checkTimeOverlap (start: Date, end: Date, existingActivities: (Subscrip
   
     return false; // Sem sobreposição
   }
-  
+
+export async function createActivity (body: any){
+    let {name, day, start, end, vacancies, place} = body;
+
+    const startTime = dayjs(start).hour();
+    const endTime = dayjs(end).hour();
+    const startCorrected = dayjs(start).add(3, 'hour').format('HH:mm');
+    if (startCorrected < "09:00") {
+        throw conflictError("The activity must start at least 9:00 am!");
+    }
+    if (endTime - startTime < 1){
+        throw conflictError("The activity must have at least 1 hour!");
+    }
+
+    return await activitiesRepository.createActivity(name, day, start, end, vacancies, place);
+}
 export async function createSubscription(userId: number, activityId: number){
     const userActivities = await activitiesRepository.listUserActivities(userId);
     const interestedActivity = await activitiesRepository.findActivityById(activityId);
