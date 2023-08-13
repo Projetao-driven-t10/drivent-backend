@@ -21,13 +21,20 @@ export async function listActivitiesByDay(day : string) {
         }
     });
 }
-// export async function listActivitiesOfDay() {
-//     return prisma.activity.groupBy({
-//         // prisma reclama mas retorna as atividades certas
-//         by : ["day"],
-//     });
-// }
 
+export async function createActivity(name: string, day: string, start: string, end: string, vacancies: number, place: string){
+    return prisma.activity.create({
+        data: {
+            name,
+            day,
+            start,
+            end,
+            vacancies,
+            place,
+            updatedAt: new Date()
+        }
+    })
+}
 export async function createSubscription(userId: number, activityId: number){
     return prisma.subscription.create({
         data: {

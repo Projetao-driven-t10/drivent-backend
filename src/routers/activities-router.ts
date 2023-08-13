@@ -8,6 +8,7 @@ activitiesRouter
     .all("/*", authenticateToken)
     .get("", activitiesController.listActivities)
     .get("/:day", activitiesController.listActivitiesByDay)
-    .post("", activitiesController.createSubscription);
+    .post("", activitiesController.createActivity)
+    .post("/subscription", activitiesController.createSubscription);
 
 export { activitiesRouter };
