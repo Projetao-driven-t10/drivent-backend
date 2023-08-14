@@ -5,13 +5,18 @@ async function findHotels() {
   const hotels = await getOrSetCache("getAllHotels", async () => {
     const allHotels = await prisma.hotel.findMany({
       include: {
-        Rooms: true,
-      }
+        Rooms: {
+          include: {
+            Booking: true,
+          },
+        },
+      },
     });
     return allHotels;
   });
   return hotels;
 }
+
 
 async function findRoomsByHotelId(hotelId: number) {
   const rooms = await getOrSetCache(`hotelroom${hotelId}`, async () => {
