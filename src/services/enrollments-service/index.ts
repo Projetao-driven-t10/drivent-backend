@@ -4,7 +4,11 @@ import { notFoundError } from "@/errors";
 import addressRepository, { CreateAddressParams } from "@/repositories/address-repository";
 import enrollmentRepository, { CreateEnrollmentParams } from "@/repositories/enrollment-repository";
 import { exclude } from "@/utils/prisma-utils";
-import { Address, Enrollment, prisma, PrismaClient, Prisma } from "@prisma/client";
+import {
+  Address, Enrollment, Prisma
+} from "@prisma/client";
+// eslint-disable-next-line boundaries/element-types
+import { prisma } from "@/config";
 
 async function getAddressFromCEP(cep: string): Promise<AddressEnrollment> {
   const result = await getAddress(cep);
@@ -56,8 +60,6 @@ function getFirstAddress(firstAddress: Address): GetAddressResult {
 
 type GetAddressResult = Omit<Address, "createdAt" | "updatedAt" | "enrollmentId">;
 
-  type PrismaTransaction = Omit<PrismaClient<Prisma.PrismaClientOptions, never>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
-
 async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollmentWithAddress) {
   const enrollment = exclude(params, "address");
   const address = getAddressForUpsert(params.address);
@@ -68,16 +70,11 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   if (result.error) {
     throw notFoundError();
   }
-  try {
-    await prisma.$transaction(async (tx: PrismaTransaction) => {
-      const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"), tx);
-  
-      await addressRepository.upsert(newEnrollment.id, address, address, tx);
-    });
-  }
-  catch (error) {
-    return error;
-  }
+
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const enrollmentResult = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"), tx);
+    await addressRepository.upsert(enrollmentResult.id, address, address, tx);
+  });
 }
 
 function getAddressForUpsert(address: CreateAddressParams) {
