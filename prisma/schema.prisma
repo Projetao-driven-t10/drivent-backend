@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -11,14 +12,14 @@ datasource db {
 }
 
 model User {
-  id         Int          @id @default(autoincrement())
-  email      String       @unique @db.VarChar(255)
-  password   String       @db.VarChar(255)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  Session    Session[]
-  Enrollment Enrollment[]
-  Booking    Booking[]
+  id           Int            @id @default(autoincrement())
+  email        String         @unique @db.VarChar(255)
+  password     String         @db.VarChar(255)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  Session      Session[]
+  Enrollment   Enrollment[]
+  Booking      Booking[]
   Subscription Subscription[]
 }
 
@@ -141,14 +142,14 @@ model Booking {
 }
 
 model Activity {
-  id           Int             @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   name         String
   day          DateTime
   start        DateTime
   end          DateTime
   vacancies    Int
   place        String
-  Subscription Subscription[]  
+  Subscription Subscription[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 }
